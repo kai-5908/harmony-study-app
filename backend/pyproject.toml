@@ -2,7 +2,7 @@
 name = "harmony-backend"
 version = "0.1.0"
 description = "Harmony study app backend"
-requires-python = ">=3.12"
+requires-python = "==3.12.*"
 
 [project.optional-dependencies]
 dev = [
