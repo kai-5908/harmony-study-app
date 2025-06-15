@@ -1,0 +1,6 @@
+prompts:
+  - .github/prompts/project-charter.md
+  - .github/prompts/tech-stack.md
+  - .github/prompts/coding-rules.md
+  - .github/prompts/design-philosophy.md
+  - .github/prompts/development-process.md
