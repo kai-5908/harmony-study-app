@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import { beforeAll, afterEach, afterAll } from 'vitest';
 
 // localStorageのモック
 const localStorageMock = (() => {
@@ -18,9 +19,16 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
+// localStorageのグローバル設定
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
+// MSWのエラーを防ぐためのダミーのfetch実装
+global.fetch = vi.fn();
+
+// MSWのエラーハンドリング
+global.Response = Response;
+global.Request = Request;
+global.Headers = Headers;
 
 // グローバルなテスト設定やモックをここに追加
 beforeAll(() => {

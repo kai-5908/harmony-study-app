@@ -321,3 +321,44 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
         except Exception as e:
             msg = f"Failed to list tasks: {e!s}"
             raise PersistenceError(msg) from e
+
+    def load_tasks(self) -> list[HarmonyTask]:
+        """全ての和声課題を取得する.
+
+        Returns:
+            list[HarmonyTask]: 読み込まれた和声課題のリスト.
+
+        Raises:
+            PersistenceError: 永続化処理でエラーが発生した場合.
+            TaskNotFoundError: 課題が見つからない場合.
+
+        """
+
+        def validate_data(data: dict) -> None:
+            """データの形式を検証する.
+
+            Args:
+                data: 検証するデータ
+
+            Raises:
+                ValidationError: データ形式が不正な場合
+
+            """
+            if not isinstance(data, dict) or "tasks" not in data:
+                msg = "Invalid JSON format: missing 'tasks' field"
+                raise ValidationError(msg)
+
+        try:
+            with Path(self.file_path).open(encoding="utf-8") as f:
+                data = json.load(f)
+
+            validate_data(data)
+            tasks = data["tasks"]
+            return [HarmonyTask(**task) for task in tasks]
+
+        except json.JSONDecodeError as e:
+            msg = f"Invalid JSON format: {e!s}"
+            raise ValidationError(msg) from e
+        except Exception as e:
+            msg = f"Failed to read tasks from JSON file: {e!s}"
+            raise PersistenceError(msg) from e

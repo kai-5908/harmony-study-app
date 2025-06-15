@@ -77,14 +77,13 @@ class HarmonyTaskRepository(ABC):
         """
 
     @abstractmethod
-    def delete_task(self, task_id: str) -> None:
-        """指定されたIDの和声課題を削除する.
+    def load_tasks(self) -> list[HarmonyTask]:
+        """全ての和声課題を取得する.
 
-        Args:
-            task_id (str): 削除する和声課題のID.
+        Returns:
+            list[HarmonyTask]: 読み込まれた和声課題のリスト.
 
         Raises:
-            TaskNotFoundError: 指定されたIDのタスクが存在しない場合.
             PersistenceError: 永続化処理でエラーが発生した場合.
 
         """

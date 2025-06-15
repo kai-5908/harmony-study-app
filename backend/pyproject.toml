@@ -5,8 +5,11 @@ description = "Harmony study app backend"
 requires-python = "==3.12.*"
 dependencies = [
     "pydantic>=2.11.7",
-    "aiofiles>=23.2.1",  # 非同期ファイルI/O
-    "typing-extensions>=4.10.0",  # Result型パターン用
+    "aiofiles>=23.2.1", # 非同期ファイルI/O
+    "typing-extensions>=4.10.0", # Result型パターン用
+    "fastapi>=0.110.0", # Web API
+    "uvicorn>=0.27.1", # ASGIサーバー
+    "httpx>=0.28.1",
 ]
 
 [project.optional-dependencies]
