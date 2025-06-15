@@ -1,7 +1,6 @@
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import { HarmonyTaskAPI } from '../api/harmonyTaskApi';
 import { type HarmonyTask, type Score, type Answer } from '../models/harmonyTaskModel';
