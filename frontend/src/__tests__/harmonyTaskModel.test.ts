@@ -6,12 +6,10 @@ describe('HarmonyTask バリデーション', () => {
       id: 'task001',
       description: 'テスト課題',
       score: { type: 'musicxml', data: '<musicxml>...</musicxml>' },
-      answer: [
-        { type: 'musicxml', data: '<musicxml>...</musicxml>' }
-      ],
+      answer: [{ type: 'musicxml', data: '<musicxml>...</musicxml>' }],
       title: '課題タイトル',
       difficulty: 'easy',
-      tags: ['初級', '二声']
+      tags: ['初級', '二声'],
     };
     expect(() => validateHarmonyTask(data)).not.toThrow();
   });
