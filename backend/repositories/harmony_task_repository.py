@@ -85,4 +85,5 @@ class HarmonyTaskRepository(ABC):
 
         Raises:
             PersistenceError: 永続化処理でエラーが発生した場合.
+
         """

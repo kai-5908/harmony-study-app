@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
-import HarmonyTaskList from './components/harmony-task/HarmonyTaskList';
+import { HarmonyTaskList } from './components/harmony-task/HarmonyTaskList';
 import HarmonyTaskDetail from './components/harmony-task/HarmonyTaskDetail';
 import theme from './theme';
 import './App.css';

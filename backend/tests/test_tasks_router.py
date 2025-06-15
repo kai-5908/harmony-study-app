@@ -55,6 +55,7 @@ def test_client(temp_json_path: str) -> Generator[TestClient, None, None]:
 
     Yields:
         TestClient: テスト用のFastAPIクライアント
+
     """
     from repositories.json_harmony_task_repository import JsonHarmonyTaskRepository
 

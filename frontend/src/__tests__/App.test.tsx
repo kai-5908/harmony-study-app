@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 import { HarmonyTaskAPI } from '../api/harmonyTaskApi';
 import { type HarmonyTask, type Score, type Answer } from '../models/harmonyTaskModel';
@@ -48,15 +49,23 @@ describe('App', () => {
         difficulty: 'easy',
         score: mockScore,
         answer: [mockAnswer],
+        tags: ['test'],
       },
     ];
 
+    // モックの実装
     vi.mocked(HarmonyTaskAPI.getTasks).mockResolvedValue(mockTasks);
 
     render(<App />);
 
-    // ローディングが終わってタスクが表示されることを確認
-    const taskTitle = await screen.findByText('Test Task');
-    expect(taskTitle).toBeInTheDocument();
+    // データが取得されて表示されるのを待つ
+    await waitFor(() => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    }, { timeout: 2000 });
+
+    // 課題の詳細が表示されていることを確認
+    expect(screen.getByText('Test Task')).toBeInTheDocument();
+    expect(screen.getByText('Test Description')).toBeInTheDocument();
+    expect(screen.getByText('難易度: easy')).toBeInTheDocument();
   });
 });

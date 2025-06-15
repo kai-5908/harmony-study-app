@@ -333,6 +333,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             TaskNotFoundError: 課題が見つからない場合.
 
         """
+
         def validate_data(data: dict) -> None:
             """データの形式を検証する.
 

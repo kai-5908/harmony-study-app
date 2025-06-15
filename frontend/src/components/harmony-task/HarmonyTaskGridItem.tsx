@@ -35,17 +35,20 @@ export const HarmonyTaskGridItem: React.FC<HarmonyTaskGridItemProps> = ({ task }
             component="h2"
             className="font-bold mb-2 flex items-center justify-between"
           >
-            {task.title}
+            {task.title || '無題の課題'}
             <ChevronRightIcon className="text-gray-400" />
           </Typography>
 
           <Box className="flex flex-wrap gap-2 mb-2">
             <Chip
               size="small"
-              label={task.difficulty}
+              label={`難易度: ${task.difficulty}`}
               color={getDifficultyColor(task.difficulty)}
               variant="outlined"
             />
+            {task.tags?.map((tag) => (
+              <Chip key={tag} size="small" label={tag} variant="outlined" color="primary" />
+            ))}
           </Box>
 
           <Typography variant="body2" color="text.secondary" className="line-clamp-2">

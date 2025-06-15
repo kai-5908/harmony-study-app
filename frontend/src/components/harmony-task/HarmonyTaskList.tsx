@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Paper, CircularProgress, Alert } from '@mui/material';
 import HarmonyTaskListHeader from './HarmonyTaskListHeader';
-import HarmonyTaskItems from './HarmonyTaskItems';
+import { HarmonyTaskItems } from './HarmonyTaskItems';
 import { HarmonyTask } from '../../models/harmonyTaskModel';
 import { HarmonyTaskAPI } from '../../api/harmonyTaskApi';
 
-const HarmonyTaskList: React.FC = () => {
+export const HarmonyTaskList: React.FC = () => {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [tasks, setTasks] = useState<HarmonyTask[]>([]);
   const [loading, setLoading] = useState(true);

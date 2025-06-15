@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import HarmonyTaskListItem from '../components/harmony-task/HarmonyTaskListItem';
-import HarmonyTaskGridItem from '../components/harmony-task/HarmonyTaskGridItem';
+import { HarmonyTaskListItem } from '../components/harmony-task/HarmonyTaskListItem';
+import { HarmonyTaskGridItem } from '../components/harmony-task/HarmonyTaskGridItem';
 import { HarmonyTask } from '../models/harmonyTaskModel';
 
 const sampleTask: HarmonyTask = {

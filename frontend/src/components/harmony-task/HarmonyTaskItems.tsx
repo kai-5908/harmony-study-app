@@ -2,15 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { List, Box } from '@mui/material';
 import { HarmonyTask } from '../../models/harmonyTaskModel';
-import HarmonyTaskListItem from './HarmonyTaskListItem';
-import HarmonyTaskGridItem from './HarmonyTaskGridItem';
+import { HarmonyTaskListItem } from './HarmonyTaskListItem';
+import { HarmonyTaskGridItem } from './HarmonyTaskGridItem';
 
 interface HarmonyTaskItemsProps {
   tasks: HarmonyTask[];
   viewMode: 'list' | 'grid';
 }
 
-const HarmonyTaskItems: React.FC<HarmonyTaskItemsProps> = ({ tasks, viewMode }) => {
+export const HarmonyTaskItems: React.FC<HarmonyTaskItemsProps> = ({ tasks, viewMode }) => {
   if (viewMode === 'list') {
     return (
       <List>

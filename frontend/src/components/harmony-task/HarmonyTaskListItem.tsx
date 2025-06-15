@@ -39,14 +39,17 @@ export const HarmonyTaskListItem: React.FC<HarmonyTaskListItemProps> = ({ task }
         primary={
           <div className="flex items-center gap-2">
             <Typography variant="subtitle1" className="font-bold">
-              {task.title}
+              {task.title || '無題の課題'}
             </Typography>
             <Chip
               size="small"
-              label={task.difficulty}
+              label={`難易度: ${task.difficulty}`}
               color={getDifficultyColor(task.difficulty)}
               variant="outlined"
             />
+            {task.tags?.map((tag) => (
+              <Chip key={tag} size="small" label={tag} variant="outlined" color="primary" />
+            ))}
           </div>
         }
         secondary={task.description}
