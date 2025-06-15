@@ -29,8 +29,11 @@ jobs:
       - name: Install uv
         run: pip install uv
 
+      - name: Set up uv virtual environment
+        run: uv venv .venv
+
       - name: Install dependencies
-        run: uv pip install -r <(uv pip compile pyproject.toml --no-emit-index-url)
+        run: uv pip install --system -r <(uv pip compile pyproject.toml --no-emit-index-url)
 
       - name: Lint with ruff
         run: uv pip install ruff && ruff check .
