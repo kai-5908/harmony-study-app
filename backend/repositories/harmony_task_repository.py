@@ -4,7 +4,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Sequence
 
 from models.harmony_task_model import HarmonyTask
 
@@ -66,9 +66,9 @@ class HarmonyTaskRepository(ABC):
     @abstractmethod
     def list_tasks(
         self,
-        difficulty: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-    ) -> List[HarmonyTask]:
+        difficulty: str = None,
+        tags: Sequence[str] = None,
+    ) -> list[HarmonyTask]:
         """和声課題の一覧を取得する.
 
         Args:

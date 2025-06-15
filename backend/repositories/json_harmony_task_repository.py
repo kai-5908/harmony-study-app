@@ -4,9 +4,8 @@
 """
 
 import json
-import os
-from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from datetime import datetime
+from pathlib import Path
 
 from models.harmony_task_model import HarmonyTask
 from repositories.harmony_task_repository import (
@@ -20,7 +19,7 @@ from repositories.harmony_task_repository import (
 class JsonHarmonyTaskRepository(HarmonyTaskRepository):
     """JSON形式での和声課題リポジトリ実装."""
 
-    def __init__(self, file_path: str):
+    def __init__(self, file_path: str) -> None:
         """初期化.
 
         Args:
@@ -31,91 +30,99 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
 
     def _ensure_file_exists(self) -> None:
         """JSONファイルの存在確認と初期化.
-        
+
         ファイルが存在しない場合、または不正な形式の場合は新規作成する.
         """
-        needs_initialization = not os.path.exists(self.file_path)
-        
+        needs_initialization = not Path(self.file_path).exists()
+
         if not needs_initialization:
             try:
-                with open(self.file_path, "r", encoding="utf-8") as f:
+                with Path(self.file_path).open(encoding="utf-8") as f:
                     data = json.load(f)
                 if not isinstance(data, dict) or "tasks" not in data or "metadata" not in data:
                     needs_initialization = True
             except json.JSONDecodeError:
                 needs_initialization = True
             except Exception as e:
-                msg = f"Failed to read JSON file: {str(e)}"
+                msg = f"Failed to read JSON file: {e!s}"
                 raise PersistenceError(msg) from e
-        
+
         if needs_initialization:
-            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+            path = Path(self.file_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
             initial_data = {"tasks": [], "metadata": self._create_metadata(0)}
             self._save_json(initial_data)
 
-    def _create_metadata(self, total_tasks: int) -> Dict:
+    def _create_metadata(self, total_tasks: int) -> dict:
         """メタデータを作成する.
 
         Args:
             total_tasks (int): 全タスク数.
 
         Returns:
-            Dict: メタデータ辞書.
+            dict: メタデータ辞書.
         """
         return {
             "version": "1.0",
-            "lastUpdated": datetime.now(timezone.utc).isoformat(),
+            "lastUpdated": datetime.now().isoformat(),
             "totalTasks": total_tasks,
         }
 
-    def _save_json(self, data: Dict) -> None:
+    def _save_json(self, data: dict) -> None:
         """JSONファイルを保存する.
 
         Args:
-            data (Dict): 保存するデータ.
+            data (dict): 保存するデータ.
 
         Raises:
             PersistenceError: ファイルの保存に失敗した場合.
         """
         try:
-            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
-            with open(self.file_path, "w", encoding="utf-8") as f:
+            path = Path(self.file_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
         except Exception as e:
-            msg = f"Failed to save JSON file: {str(e)}"
+            msg = f"Failed to save JSON file: {e!s}"
             raise PersistenceError(msg) from e
 
-    def _load_json(self) -> Dict:
+    def _load_json(self) -> dict:
         """JSONファイルを読み込む.
 
         Returns:
-            Dict: 読み込んだJSONデータ.
+            dict: 読み込んだJSONデータ.
 
         Raises:
             PersistenceError: ファイルの読み込みに失敗した場合または不正な形式の場合.
         """
         try:
-            with open(self.file_path, "r", encoding="utf-8") as f:
+            with Path(self.file_path).open(encoding="utf-8") as f:
                 data = json.load(f)
-            
+
             # 厳格な検証
+            error_prefix = "Invalid JSON format:"
             if not isinstance(data, dict):
-                raise PersistenceError("Invalid JSON format: root must be an object")
+                msg = f"{error_prefix} root must be an object"
+                raise PersistenceError(msg)
             if "tasks" not in data:
-                raise PersistenceError("Invalid JSON format: missing 'tasks' field")
+                msg = f"{error_prefix} missing 'tasks' field"
+                raise PersistenceError(msg)
             if "metadata" not in data:
-                raise PersistenceError("Invalid JSON format: missing 'metadata' field")
+                msg = f"{error_prefix} missing 'metadata' field"
+                raise PersistenceError(msg)
             if not isinstance(data["tasks"], list):
-                raise PersistenceError("Invalid JSON format: 'tasks' must be an array")
+                msg = f"{error_prefix} 'tasks' must be an array"
+                raise PersistenceError(msg)
             if not isinstance(data["metadata"], dict):
-                raise PersistenceError("Invalid JSON format: 'metadata' must be an object")
-            
+                msg = f"{error_prefix} 'metadata' must be an object"
+                raise PersistenceError(msg)
+
             return data
         except json.JSONDecodeError as e:
-            msg = f"Invalid JSON format: {str(e)}"
+            msg = f"Invalid JSON format: {e!s}"
             raise PersistenceError(msg) from e
-        except IOError as e:
-            msg = f"Failed to read JSON file: {str(e)}"
+        except OSError as e:
+            msg = f"Failed to read JSON file: {e!s}"
             raise PersistenceError(msg) from e
 
     def save_task(self, task: HarmonyTask) -> None:
@@ -129,39 +136,36 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             ValidationError: タスクデータが不正な場合.
         """
         try:
-            # タスクの検証
             if not isinstance(task, HarmonyTask):
                 msg = "Invalid task data"
                 raise ValidationError(msg)
 
             # データの読み込み
             data = self._load_json()
-            tasks = data.get("tasks", [])
+            tasks = data["tasks"]
 
-            # 既存タスクの更新または新規追加
-            task_dict = task.model_dump()  # dict()はdeprecatedなのでmodel_dump()を使用
-            for i, existing_task in enumerate(tasks):
-                if existing_task["id"] == task.id:
-                    tasks[i] = task_dict
-                    break
-            else:
-                tasks.append(task_dict)
+            # 既存のタスクを探す
+            for i, t in enumerate(tasks):
+                if t["id"] == task.id:
+                    tasks[i] = task.model_dump()
+                    self._save_json(data)
+                    return
 
-            # メタデータの更新
-            data["tasks"] = tasks
+            # 新規タスクの追加
+            tasks.append(task.model_dump())
             data["metadata"] = self._create_metadata(len(tasks))
             self._save_json(data)
-        except ValidationError:
+        except (ValidationError, FileNotFoundError):
             raise
         except Exception as e:
-            msg = f"Failed to save task: {str(e)}"
+            msg = f"Failed to save task: {e!s}"
             raise PersistenceError(msg) from e
 
-    def load_task(self, task_id: str) -> HarmonyTask:
-        """指定されたIDの和声課題を読み込む.
+    def get_task(self, task_id: str) -> HarmonyTask:
+        """指定されたIDの和声課題を取得する.
 
         Args:
-            task_id (str): 読み込む和声課題のID.
+            task_id (str): 取得する和声課題のID.
 
         Returns:
             HarmonyTask: 読み込まれた和声課題.
@@ -179,16 +183,16 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             msg = f"Task not found: {task_id}"
             raise FileNotFoundError(msg)
         except ValidationError as e:
-            msg = f"Invalid task data: {str(e)}"
+            msg = f"Invalid task data: {e!s}"
             raise ValidationError(msg) from e
         except FileNotFoundError:
             raise
         except Exception as e:
-            msg = f"Failed to load task: {str(e)}"
+            msg = f"Failed to load task: {e!s}"
             raise PersistenceError(msg) from e
 
     def delete_task(self, task_id: str) -> None:
-        """和声課題を削除する.
+        """指定されたIDの和声課題を削除する.
 
         Args:
             task_id (str): 削除する和声課題のID.
@@ -200,35 +204,34 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
         try:
             data = self._load_json()
             tasks = data["tasks"]
+            original_length = len(tasks)
+            tasks[:] = [t for t in tasks if t["id"] != task_id]
 
-            for i, task in enumerate(tasks):
-                if task["id"] == task_id:
-                    tasks.pop(i)
-                    data["metadata"] = self._create_metadata(len(tasks))
-                    self._save_json(data)
-                    return
+            if len(tasks) == original_length:
+                msg = f"Task not found: {task_id}"
+                raise FileNotFoundError(msg)
 
-            msg = f"Task not found: {task_id}"
-            raise FileNotFoundError(msg)
+            data["metadata"] = self._create_metadata(len(tasks))
+            self._save_json(data)
         except FileNotFoundError:
             raise
         except Exception as e:
-            msg = f"Failed to delete task: {str(e)}"
+            msg = f"Failed to delete task: {e!s}"
             raise PersistenceError(msg) from e
 
     def list_tasks(
         self,
-        difficulty: Optional[str] = None,
-        tags: Optional[List[str]] = None,
-    ) -> List[HarmonyTask]:
+        difficulty: str | None = None,
+        tags: list[str] | None = None,
+    ) -> list[HarmonyTask]:
         """和声課題の一覧を取得する.
 
         Args:
-            difficulty (Optional[str]): フィルタする難易度.
-            tags (Optional[List[str]]): フィルタするタグのリスト.
+            difficulty (str | None, optional): 難易度でフィルタする場合の値.
+            tags (list[str] | None, optional): タグでフィルタする場合の値のリスト.
 
         Returns:
-            List[HarmonyTask]: フィルタ条件に合致する和声課題のリスト.
+            list[HarmonyTask]: フィルタ条件に合致する和声課題のリスト.
 
         Raises:
             PersistenceError: 永続化処理でエラーが発生した場合.
@@ -237,24 +240,20 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             data = self._load_json()
             tasks = []
 
-            for task_data in data.get("tasks", []):
+            for task_data in data["tasks"]:
+                task = HarmonyTask.model_validate(task_data)
+
                 # 難易度フィルタ
-                if difficulty and task_data.get("difficulty") != difficulty:
+                if difficulty and task.difficulty != difficulty:
                     continue
 
                 # タグフィルタ
-                if tags:
-                    task_tags = task_data.get("tags", [])
-                    if not all(tag in task_tags for tag in tags):
-                        continue
-
-                try:
-                    tasks.append(HarmonyTask.model_validate(task_data))
-                except ValidationError:
-                    # 不正なタスクはスキップ
+                if tags and not all(tag in task.tags for tag in tags):
                     continue
+
+                tasks.append(task)
 
             return tasks
         except Exception as e:
-            msg = f"Failed to list tasks: {str(e)}"
+            msg = f"Failed to list tasks: {e!s}"
             raise PersistenceError(msg) from e
