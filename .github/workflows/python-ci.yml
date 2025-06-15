@@ -21,22 +21,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version-file: "pyproject.toml"
 
-      - name: Install uv
-        run: pip install uv
+      - name: Sync dependencies
+        run: uv sync
 
-      - name: Set up uv virtual environment
-        run: uv venv .venv
-
-      - name: Install dependencies
-        run: uv pip install --system -r <(uv pip compile pyproject.toml --no-emit-index-url)
-
-      - name: Lint with ruff
-        run: uv pip install ruff && ruff check .
+      - name: Run ruff
+        run: uv run ruff check .
 
       - name: Run pytest
-        run: uv pip install pytest && pytest
+        run: uv run pytest
