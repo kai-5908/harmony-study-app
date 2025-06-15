@@ -100,3 +100,130 @@
 - 四半期ごとのレビュー
 - チームフィードバックの反映
 - ベストプラクティスの更新
+
+## 開発環境とツールチェーン
+
+### 1. 環境セットアップ
+- **WSL環境での開発**
+  - WSLでの出力問題対策
+    - 代替コマンドの用意（例：`python -u`の使用）
+    - ログファイルへの出力活用
+    - VSCode Remote WSLの設定最適化
+  - パス解決の注意点
+    - 絶対パスの使用
+    - パスセパレータの統一（POSIXスタイル推奨）
+  - 環境変数の管理
+    - `.env`ファイルの利用
+    - WSL固有の環境変数設定
+
+### 2. CI/CDツールチェーン
+- **検証コマンドリファレンス**
+
+  **フロントエンド検証**
+  ```bash
+  # 依存関係の更新と整合性確認
+  cd frontend
+  rm -rf node_modules package-lock.json
+  npm install --legacy-peer-deps
+
+  # ESLintによるコード品質チェック
+  npm run lint
+  # または詳細なレポート出力
+  npx eslint . --ext .js,.jsx,.ts,.tsx --report-unused-disable-directives
+
+  # Prettierによるコードフォーマットチェック
+  npx prettier --check "src/**/*.{ts,tsx}"
+  # フォーマット適用
+  npx prettier --write "src/**/*.{ts,tsx}"
+
+  # TypeScript型チェック
+  npm run type-check
+  # または詳細オプション付き
+  npx tsc --noEmit --incremental false
+
+  # テスト実行
+  npm test
+  # カバレッジレポート付き
+  npm test -- --coverage
+  ```
+
+  **バックエンド検証**
+  ```bash
+  # 仮想環境の再作成と依存関係の更新
+  cd backend
+  source .venv/bin/activate  # Windows WSLの場合
+  uv pip install -e ".[dev,test]"
+  uv sync --all-extras
+
+  # ruffによるコード品質チェック
+  ruff check .
+  # 自動修正
+  ruff check . --fix
+
+  # ruffによるフォーマットチェック
+  ruff format --check .
+  # フォーマット適用
+  ruff format .
+
+  # mypyによる型チェック（詳細出力）
+  mypy . --show-error-codes --pretty
+
+  # pytestによるテスト実行
+  pytest
+  # カバレッジレポート付き
+  pytest --cov=. --cov-report=term-missing
+  # 詳細出力とログ表示
+  pytest -v --log-cli-level=INFO
+  ```
+
+  **WSL環境でのデバッグ用追加コマンド**
+  ```bash
+  # Pythonバッファリング無効化（出力問題対策）
+  python -u -m pytest
+
+  # ログファイルへの出力
+  pytest --log-file=test.log
+
+  # エラー発生時のPDB起動
+  pytest --pdb
+
+  # WSLでのパス問題のデバッグ
+  realpath .  # 現在の絶対パスを表示
+  pwd  # 現在のディレクトリを表示
+  ```
+
+- **CI実行前のローカルチェックリスト**
+  1. 最新のmainブランチを取り込んでいることを確認
+  2. 依存関係を最新化
+  3. 全検証コマンドを順次実行
+  4. すべてのチェックがパスすることを確認
+  5. コミット前にpre-commitフックが正常に動作することを確認
+
+### 3. デバッグとトラブルシューティング
+- **ログ・エラー解析**
+  - エラーメッセージの完全な取得
+  - スタックトレースの保存
+  - 環境情報の記録
+- **再現手順の文書化**
+  - 環境・バージョン情報
+  - 実行コマンド
+  - 期待される結果
+  - 実際の結果
+- **解決策の共有**
+  - トラブルシューティングガイドの更新
+  - ナレッジベースへの追加
+  - レビュー時の注意点として共有
+
+### 4. 定期的なメンテナンス
+- **依存関係の更新**
+  - 定期的なアップデートチェック
+  - 破壊的変更の確認
+  - テストスイートでの検証
+- **設定ファイルの見直し**
+  - linterルールの最適化
+  - CI/CD設定の効率化
+  - 型チェック設定の調整
+- **テストカバレッジの監視**
+  - 定期的なカバレッジレポート確認
+  - 不足箇所の特定と補完
+  - テスト品質の向上
