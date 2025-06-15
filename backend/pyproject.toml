@@ -7,13 +7,23 @@ requires-python = "==3.12.*"
 [project.optional-dependencies]
 dev = [
     "ruff",
-    "pytest"
+    "pytest",
+    "mypy>=1.16.0"
 ]
 
 [tool.ruff]
 line-length = 120
-select = ["E", "F", "W", "I"]
-ignore = []
+# すべてのルールセットを有効化し、FastAPI以外のフレームワーク専用ルールのみ除外（pytest・pathlib・type stubは有効化）
+select = [
+    "ALL"
+]
+ignore = [
+    "AIR",  # Airflow
+    "DJ",   # Django
+    "DTZ",  # Django timezone
+    "PD",   # pandas
+    "NPY",  # NumPy
+]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
