@@ -4,6 +4,7 @@
 """
 
 import json
+from collections.abc import Sequence
 from datetime import datetime
 from pathlib import Path
 
@@ -109,7 +110,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
 
         """
         try:
-            with self.file_path.open(encoding="utf-8") as f:
+            with Path(self.file_path).open(encoding="utf-8") as f:
                 return json.load(f)
         except json.JSONDecodeError as e:
             msg = f"Invalid JSON format: {e!s}"
@@ -119,6 +120,14 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             raise PersistenceError(msg) from e
 
     def _load_json(self) -> dict:
+        """JSONファイルを読み込んで検証する.
+
+        Returns:
+            検証済みのJSONデータ.
+
+        Raises:
+            PersistenceError: ファイルの読み込みに失敗した場合または不正な形式の場合.
+        """
         try:
             data = self._read_json()
             error_prefix = "Invalid JSON format:"
@@ -136,9 +145,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
                 msg = f"{error_prefix} 'metadata' must be an object"
                 raise PersistenceError(msg)
 
-            if len(data["tasks"]) == 0:
-                return data
-            return data  # noqa: TRY300
+            return data
         except json.JSONDecodeError as e:
             msg = f"Invalid JSON format: {e!s}"
             raise PersistenceError(msg) from e
@@ -208,7 +215,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             msg = f"Failed to save task: {e!s}"
             raise PersistenceError(msg) from e
 
-    def get_task(self, task_id: str) -> HarmonyTask:
+    def load_task(self, task_id: str) -> HarmonyTask:
         """指定されたIDの和声課題を取得する.
 
         Args:
@@ -228,7 +235,9 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             for task_data in data["tasks"]:
                 if task_data["id"] == task_id:
                     return HarmonyTask.model_validate(task_data)
-            self._handle_missing_task(task_id)
+            # unreachable 警告を避けるため、直接例外を発生させる
+            msg = f"Task not found: {task_id}"
+            raise TaskNotFoundError(msg)
         except ValidationError as e:
             msg = f"Invalid task data: {e!s}"
             raise ValidationError(msg) from e
@@ -269,7 +278,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
     def list_tasks(
         self,
         difficulty: str | None = None,
-        tags: list[str] | None = None,
+        tags: Sequence[str] | None = None,
     ) -> list[HarmonyTask]:
         """和声課題の一覧を取得する.
 
@@ -291,18 +300,23 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             for task_data in data["tasks"]:
                 try:
                     task = HarmonyTask.model_validate(task_data)
-                    # 難易度とタグでフィルタリング
-                    if difficulty and task.difficulty != difficulty:
+                    
+                    # 難易度フィルタ
+                    if difficulty is not None and task.difficulty != difficulty:
                         continue
-                    if tags and not all(tag in task.tags for tag in tags):
-                        continue
+                    
+                    # タグフィルタ
+                    if tags:  # tagsがNoneまたは空のリストでない場合のみフィルタリング
+                        if not task.tags:  # タスクにタグがない場合はスキップ
+                            continue
+                        if not all(t in task.tags for t in tags):
+                            continue
+                    
                     tasks.append(task)
-                except ValidationError:
+                except Exception:
+                    # 無効なタスクはログに記録してスキップ
                     continue
-
-            if not tasks:
-                return tasks
-            return tasks  # noqa: TRY300
+            return tasks
         except Exception as e:
             msg = f"Failed to list tasks: {e!s}"
             raise PersistenceError(msg) from e
