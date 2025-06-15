@@ -1,3 +1,5 @@
+import { HarmonyTask } from '../models/harmonyTaskModel';
+
 /**
  * 永続化層のエラー定義
  */
