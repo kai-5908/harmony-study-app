@@ -30,7 +30,7 @@ jobs:
           python-version-file: "backend/pyproject.toml"
 
       - name: Sync dependencies
-        run: uv sync
+        run: uv sync --extra dev
 
       - name: Run ruff
         run: uv run ruff check .
