@@ -4,6 +4,12 @@ version = "0.1.0"
 description = "Harmony study app backend"
 requires-python = ">=3.12"
 
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pytest"
+]
+
 [tool.ruff]
 line-length = 120
 select = ["E", "F", "W", "I"]
