@@ -70,6 +70,15 @@
 - テストコードもコーディングルール・命名規則に従うこと。
 - テストの粒度・カバレッジ目標はdevelopment-process.mdを参照。
 
+## 7. CI/CD運用ルール
+- 依存管理は `pyproject.toml` で一元管理し、dev依存（ruff, pytest等）は `[project.optional-dependencies.dev]` に明記する。
+- Pythonバージョンや依存パッケージのバージョン指定は厳密に記述し、CI/CD環境とローカルで差異が出ないようにする。
+- 仮想環境（venv）はCI/CDワークフロー内で明示的に作成・有効化し、`uv sync --extra dev` でdev依存も必ずインストールする。
+- pytestの警告・エラーは事前にローカルで確認し、CIで失敗しないようにする。
+- CIワークフロー（GitHub Actions等）では、パス指定やアクションの記法ミスに注意し、公式ガイドや他プロジェクト例を参考にする。
+- CI/CDで検出された問題は、都度コーディングルールやドキュメントに反映し、運用ルールをアップデートする。
+- ドキュメント（README, coding-rules.md等）と実装内容は常に同期し、ルール変更時は必ずドキュメントも修正する。
+
 ---
 
 ## TypeScript用 ESLint/Prettier 設定例

@@ -7,9 +7,17 @@
 - 分解されたタスクを1つずつ実施
 
 ## ブランチ戦略
-- GitHub Flowを採用
-  - mainブランチは常にデプロイ可能な状態を保つ
-  - 機能追加や修正はfeatureブランチを切って作業し、完了後にmainへマージ
+- GitLab Flowをベースに、以下のブランチ運用とします。
+  - mainブランチ：開発環境用。日常的な開発・統合はmainで行い、安定後productionへマージ
+  - productionブランチ：本番環境用。mainからのリリース時のみproductionへマージし、本番デプロイを実施
+  - featureブランチ：新機能・改善・バグ修正など、すべての開発タスクは `feature/xxx` で分岐。作業完了後mainへマージ。
+    - 各featureブランチ・MR（PR）は必ず対応するIssueと紐付け、進捗を可視化すること。
+  - hotfixブランチ：本番障害等の緊急修正は `hotfix/xxx` で分岐し、productionとmain両方へマージ
+  - issueブランチは廃止し、バグ修正や小規模タスクもfeatureブランチで対応
+  - リリース時はmainからproductionへPRを作成し、CI/CDで本番反映
+  - 各ブランチは必ず最新のmain/productionを取り込んでからマージする
+  - マージ戦略は原則「Squash and Merge」または「Merge Commit」方式を採用し、履歴を明確に保つ
+  - ブランチ命名規則・運用ルールはREADMEやプロジェクトルートに明記
 
 ## Pull RequestからReviewの流れ
 - PRの内容は`pull_request_template.md`を利用
@@ -46,6 +54,11 @@
     - テストが追加されていない場合、レビューで指摘し、原則としてマージ不可とします。
     - 例外的にテストが不要な場合は、PR本文で理由を明記してください。
 - CIでテスト・Lintが通らないPRはマージ不可です。
+
+### CI/CD運用に関する補足
+- 依存管理・仮想環境（venv）・pyproject.tomlの記述ルールはcoding-rules.mdのCI/CD運用ルールに従うこと。
+- CI/CDで発生した問題やノウハウは、必ずドキュメント（coding-rules.md, development-process.md等）に反映し、運用ルールを継続的に改善する。
+- CIワークフローの記法やパス指定ミスを防ぐため、公式ガイドや他プロジェクト例を参照し、Pull Request単位でCIが安定稼働することを必ず確認する。
 
 ## ドキュメント管理
 
