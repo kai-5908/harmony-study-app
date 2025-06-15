@@ -99,11 +99,35 @@
 - 設計上重要な決定はADR（Architecture Decision Record）として記録する
 - テンプレートは `adr_template.md` を用意し、それに従う
 
-## 6. Linter/Formatterの利用
-- **Python**
-  - ruffを利用し、すべてのルールを適用。無視したい規則があれば議論の上で決定
-- **TypeScript**
-  - ESLint（Airbnbベース推奨）＋Prettierを利用し、コード品質と整形を自動化
+## 6. Python開発環境
+### 6.1 仮想環境
+- 仮想環境は `uv` を使用
+  ```bash
+  # 仮想環境の作成（初回のみ）
+  uv venv
+
+  # 仮想環境の有効化（開発時は毎回実行）
+  . .venv/bin/activate  # Unix系
+  .venv\Scripts\activate  # Windows
+
+  # 依存関係のインストール（環境構築時・依存関係更新時）
+  uv sync
+  uv sync --extra dev  # 開発用依存もインストール
+  ```
+
+### 6.2 依存関係管理
+- `pyproject.toml` で依存関係を管理
+- 本番用依存は `dependencies` セクションに記載
+- 開発用依存は `optional-dependencies.dev` セクションに記載
+- バージョン指定は `>=` を基本とし、互換性の問題がある場合のみ固定
+
+### 6.3 開発ワークフロー
+1. 仮想環境の有効化
+2. コードの編集
+3. ruffによる自動フォーマット
+4. mypyによる型チェック
+5. pytestによるテスト実行
+6. uvicorn等による開発サーバー起動
 
 ## 7. テスト実装のルール
 - すべてのPull Requestでは、実装した関数・クラス等に対応するユニットテストの追加・修正が必須です。
