@@ -85,7 +85,7 @@ class HarmonyTask(BaseModel):
             ValueError: answerが空、またはdifficultyが不正な場合。
 
         """
-        obj = cls.parse_obj(data)
+        obj = cls.model_validate(data)  # parse_obj()はdeprecatedなのでmodel_validate()を使用
         if not obj.answer or len(obj.answer) == 0:
             msg = "answer must be a non-empty list"
             raise ValueError(msg)
