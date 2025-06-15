@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { HarmonyTask } from '../models/harmonyTaskModel';
 import type { HarmonyTaskRepository } from '../repositories/harmonyTaskRepository';
 import { JsonHarmonyTaskRepository } from '../repositories/jsonHarmonyTaskRepository';
