@@ -1,0 +1,28 @@
+# ビルド生成物
+dist/
+build/
+*.pyc
+__pycache__/
+*.egg-info/
+
+# 依存関係
+node_modules/
+.venv/
+.env/
+
+# キャッシュ
+.cache/
+.pytest_cache/
+coverage/
+
+# ロック・ファイル
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# その他
+.DS_Store
+.idea/
+.vscode/
+*.log
