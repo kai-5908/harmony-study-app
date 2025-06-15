@@ -18,6 +18,7 @@
   - 各ブランチは必ず最新のmain/productionを取り込んでからマージする
   - マージ戦略は原則「Squash and Merge」または「Merge Commit」方式を採用し、履歴を明確に保つ
   - ブランチ命名規則・運用ルールはREADMEやプロジェクトルートに明記
+  - featureブランチを作成する際は、必ずリモートリポジトリのmainをfetch/pullして最新状態に同期した上で、そこから新規ブランチを切ること。
 
 ## Pull RequestからReviewの流れ
 - PRの内容は`pull_request_template.md`を利用
