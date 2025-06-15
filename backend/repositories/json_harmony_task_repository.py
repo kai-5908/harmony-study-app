@@ -127,6 +127,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
 
         Raises:
             PersistenceError: ファイルの読み込みに失敗した場合または不正な形式の場合.
+
         """
         try:
             data = self._read_json()
@@ -145,7 +146,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
                 msg = f"{error_prefix} 'metadata' must be an object"
                 raise PersistenceError(msg)
 
-            return data
+            return data  # noqa: TRY300
         except json.JSONDecodeError as e:
             msg = f"Invalid JSON format: {e!s}"
             raise PersistenceError(msg) from e
@@ -237,7 +238,7 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
                     return HarmonyTask.model_validate(task_data)
             # unreachable 警告を避けるため、直接例外を発生させる
             msg = f"Task not found: {task_id}"
-            raise TaskNotFoundError(msg)
+            raise TaskNotFoundError(msg)  # noqa: TRY301
         except ValidationError as e:
             msg = f"Invalid task data: {e!s}"
             raise ValidationError(msg) from e
@@ -300,23 +301,23 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
             for task_data in data["tasks"]:
                 try:
                     task = HarmonyTask.model_validate(task_data)
-                    
+
                     # 難易度フィルタ
                     if difficulty is not None and task.difficulty != difficulty:
                         continue
-                    
+
                     # タグフィルタ
                     if tags:  # tagsがNoneまたは空のリストでない場合のみフィルタリング
                         if not task.tags:  # タスクにタグがない場合はスキップ
                             continue
                         if not all(t in task.tags for t in tags):
                             continue
-                    
+
                     tasks.append(task)
-                except Exception:
+                except Exception:  # noqa: BLE001, S112
                     # 無効なタスクはログに記録してスキップ
                     continue
-            return tasks
+            return tasks  # noqa: TRY300
         except Exception as e:
             msg = f"Failed to list tasks: {e!s}"
             raise PersistenceError(msg) from e
