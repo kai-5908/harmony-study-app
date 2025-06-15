@@ -16,11 +16,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src/**/*",
-    "global.d.ts",
-    ".eslintrc.js",
-    "vite.config.ts",
-    "vitest.config.ts"
-  ]
+  "include": ["src/**/*", "global.d.ts", ".eslintrc.js", "vite.config.ts", "vitest.config.ts"]
 }

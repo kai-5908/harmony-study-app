@@ -53,7 +53,9 @@ export class JsonHarmonyTaskRepository implements HarmonyTaskRepository {
       }
       return JSON.parse(data) as StorageData;
     } catch (e) {
-      throw new PersistenceError(`Failed to load JSON: ${e instanceof Error ? e.message : String(e)}`);
+      throw new PersistenceError(
+        `Failed to load JSON: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
 
@@ -61,7 +63,9 @@ export class JsonHarmonyTaskRepository implements HarmonyTaskRepository {
     try {
       localStorage.setItem(this.storagePath, JSON.stringify(data, null, 2));
     } catch (e) {
-      throw new PersistenceError(`Failed to save JSON: ${e instanceof Error ? e.message : String(e)}`);
+      throw new PersistenceError(
+        `Failed to save JSON: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
 
@@ -85,7 +89,9 @@ export class JsonHarmonyTaskRepository implements HarmonyTaskRepository {
       if (e instanceof ValidationError) {
         throw e;
       }
-      throw new PersistenceError(`Failed to save task: ${e instanceof Error ? e.message : String(e)}`);
+      throw new PersistenceError(
+        `Failed to save task: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
   }
 

@@ -11,8 +11,8 @@ const config = {
   languageOptions: {
     globals: {
       ...globals.node,
-    }
-  }
+    },
+  },
 };
 
 const currentDir = process.cwd();
@@ -34,7 +34,7 @@ export default [
       parserOptions: {
         project: './tsconfig.json',
         tsconfigRootDir: currentDir,
-      }
+      },
     },
     plugins: {
       '@typescript-eslint': tseslint,
@@ -43,11 +43,14 @@ export default [
     },
     rules: {
       // TypeScript Rules
-      '@typescript-eslint/no-unused-vars': ['error', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_'
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-empty-function': 'off',
@@ -67,7 +70,7 @@ export default [
       globals: {
         ...globals.node,
         module: true,
-      }
-    }
-  }
+      },
+    },
+  },
 ];

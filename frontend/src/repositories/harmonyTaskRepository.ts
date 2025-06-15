@@ -32,7 +32,7 @@ export type Result<T, E> = Success<T> | Failure<E>;
 export class Success<T> {
   readonly value: T;
   readonly isSuccess = true;
-  
+
   constructor(value: T) {
     this.value = value;
   }
@@ -41,7 +41,7 @@ export class Success<T> {
 export class Failure<E> {
   readonly error: E;
   readonly isSuccess = false;
-  
+
   constructor(error: E) {
     this.error = error;
   }
@@ -75,10 +75,7 @@ export interface HarmonyTaskRepository {
    * @returns フィルタ条件に合致する和声課題のリスト
    * @throws PersistenceError 永続化処理でエラーが発生した場合
    */
-  listTasks(options?: {
-    difficulty?: string;
-    tags?: string[];
-  }): Promise<HarmonyTask[]>;
+  listTasks(options?: { difficulty?: string; tags?: string[] }): Promise<HarmonyTask[]>;
 
   /**
    * 指定されたIDの和声課題を削除する
