@@ -331,15 +331,27 @@ class JsonHarmonyTaskRepository(HarmonyTaskRepository):
         Raises:
             PersistenceError: 永続化処理でエラーが発生した場合.
             TaskNotFoundError: 課題が見つからない場合.
-        """
-        try:
-            with Path(self.file_path).open(encoding="utf-8") as f:
-                data = json.load(f)
 
+        """
+        def validate_data(data: dict) -> None:
+            """データの形式を検証する.
+
+            Args:
+                data: 検証するデータ
+
+            Raises:
+                ValidationError: データ形式が不正な場合
+
+            """
             if not isinstance(data, dict) or "tasks" not in data:
                 msg = "Invalid JSON format: missing 'tasks' field"
                 raise ValidationError(msg)
 
+        try:
+            with Path(self.file_path).open(encoding="utf-8") as f:
+                data = json.load(f)
+
+            validate_data(data)
             tasks = data["tasks"]
             return [HarmonyTask(**task) for task in tasks]
 
