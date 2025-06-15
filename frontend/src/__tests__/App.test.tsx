@@ -58,9 +58,12 @@ describe('App', () => {
     render(<App />);
 
     // データが取得されて表示されるのを待つ
-    await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
 
     // 課題の詳細が表示されていることを確認
     expect(screen.getByText('Test Task')).toBeInTheDocument();
