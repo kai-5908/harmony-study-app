@@ -5,6 +5,8 @@ description = "Harmony study app backend"
 requires-python = "==3.12.*"
 dependencies = [
     "pydantic>=2.11.7",
+    "aiofiles>=23.2.1",  # 非同期ファイルI/O
+    "typing-extensions>=4.10.0",  # Result型パターン用
 ]
 
 [project.optional-dependencies]
@@ -13,6 +15,9 @@ dev = [
     "pytest",
     "mypy>=1.16.0"
 ]
+
+[tool.setuptools]
+packages = ["models", "repositories"]
 
 [tool.ruff]
 line-length = 120
