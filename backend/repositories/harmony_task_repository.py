@@ -4,7 +4,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Sequence
+from collections.abc import Sequence
 
 from models.harmony_task_model import HarmonyTask
 
@@ -12,25 +12,19 @@ from models.harmony_task_model import HarmonyTask
 class PersistenceError(Exception):
     """永続化層の基底例外クラス."""
 
-    pass
 
-
-class FileNotFoundError(PersistenceError):
+class TaskNotFoundError(PersistenceError):
     """ファイルが見つからない場合の例外."""
-
-    pass
 
 
 class ValidationError(PersistenceError):
     """データバリデーションエラーの例外."""
 
-    pass
-
 
 class HarmonyTaskRepository(ABC):
     """和声課題リポジトリのインターフェース.
 
-    全ての永続化実装（JSON, DB等）はこのインターフェースを実装する必要がある.
+    全ての永続化実装(JSON, DB等)はこのインターフェースを実装する必要がある.
     """
 
     @abstractmethod
@@ -38,50 +32,49 @@ class HarmonyTaskRepository(ABC):
         """和声課題を保存する.
 
         Args:
-            task (HarmonyTask): 保存する和声課題.
+            task (HarmonyTask): 保存する和声課題.        Raises:
 
-        Raises:
             PersistenceError: 永続化処理でエラーが発生した場合.
             ValidationError: タスクデータが不正な場合.
+
         """
-        pass
 
     @abstractmethod
     def load_task(self, task_id: str) -> HarmonyTask:
-        """指定されたIDの和声課題を読み込む.
+        """指定されたIDの和声課題を取得する.
 
         Args:
-            task_id (str): 読み込む和声課題のID.
+            task_id (str): 取得する和声課題のID.
 
         Returns:
             HarmonyTask: 読み込まれた和声課題.
 
         Raises:
-            FileNotFoundError: 指定されたIDのタスクが存在しない場合.
+            TaskNotFoundError: 指定されたIDのタスクが存在しない場合.
             PersistenceError: 永続化処理でエラーが発生した場合.
             ValidationError: 読み込んだデータが不正な場合.
+
         """
-        pass
 
     @abstractmethod
     def list_tasks(
         self,
-        difficulty: str = None,
-        tags: Sequence[str] = None,
+        difficulty: str | None = None,
+        tags: Sequence[str] | None = None,
     ) -> list[HarmonyTask]:
         """和声課題の一覧を取得する.
 
         Args:
-            difficulty (Optional[str]): フィルタする難易度.
-            tags (Optional[List[str]]): フィルタするタグのリスト.
+            difficulty (str | None): 難易度でフィルタする場合の値.
+            tags (Sequence[str] | None): タグでフィルタする場合の値のリスト.
 
         Returns:
-            List[HarmonyTask]: フィルタ条件に合致する和声課題のリスト.
+            list[HarmonyTask]: フィルタ条件に合致する和声課題のリスト.
 
         Raises:
             PersistenceError: 永続化処理でエラーが発生した場合.
+
         """
-        pass
 
     @abstractmethod
     def delete_task(self, task_id: str) -> None:
@@ -91,7 +84,7 @@ class HarmonyTaskRepository(ABC):
             task_id (str): 削除する和声課題のID.
 
         Raises:
-            FileNotFoundError: 指定されたIDのタスクが存在しない場合.
+            TaskNotFoundError: 指定されたIDのタスクが存在しない場合.
             PersistenceError: 永続化処理でエラーが発生した場合.
+
         """
-        pass
