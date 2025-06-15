@@ -1,0 +1,43 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "バッハコラール バス課題 No.1",
+      "description": "バッハコラールのバス声部が与えられています。上三声を完成させてください。",
+      "score": {
+        "type": "musicxml",
+        "data": "scores/bach_chorale_bass_1.musicxml"
+      },
+      "answer": [
+        {
+          "type": "musicxml",
+          "data": "answers/bach_chorale_bass_1_answer.musicxml"
+        }
+      ],
+      "difficulty": "normal",
+      "tags": ["バッハコラール", "バス課題"]
+    },
+    {
+      "id": "2",
+      "title": "機能和声 ソプラノ課題 No.1",
+      "description": "与えられたソプラノ旋律に対して、下三声を完成させてください。",
+      "score": {
+        "type": "musicxml",
+        "data": "scores/functional_harmony_soprano_1.musicxml"
+      },
+      "answer": [
+        {
+          "type": "musicxml",
+          "data": "answers/functional_harmony_soprano_1_answer.musicxml"
+        }
+      ],
+      "difficulty": "easy",
+      "tags": ["機能和声", "ソプラノ課題"]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2025-06-16T10:00:00",
+    "totalTasks": 2
+  }
+}
