@@ -1,0 +1,93 @@
+// 和声課題データモデル TypeScript定義
+
+export type ScoreType = 'musicxml' | 'image' | 'json';
+export type AnswerType = 'musicxml' | 'image' | 'json';
+
+export interface Score {
+  type: ScoreType;
+  data: string; // 譜例データ本体またはパス
+}
+
+export interface Answer {
+  type: AnswerType;
+  data: string; // 解答データ本体またはパス
+}
+
+// 難易度はenumで厳格化
+export type Difficulty = 'easy' | 'normal' | 'hard';
+
+// タスクのステータス
+export type TaskStatus = 'not_started' | 'in_progress' | 'completed';
+
+// 和声課題のインターフェース
+export interface HarmonyTask {
+  id: string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  createdAt: Date;
+  dueDate?: Date;
+  difficulty?: Difficulty;
+  score?: Score;
+  answer?: Answer;
+  tags?: string[];
+}
+
+// HarmonyTask型のバリデーション関数
+export function validateHarmonyTask(task: unknown): asserts task is HarmonyTask {
+  if (!task || typeof task !== 'object') {
+    throw new Error('Task must be an object');
+  }
+
+  const t = task as Partial<HarmonyTask>;
+
+  if (!t.id || typeof t.id !== 'string') {
+    throw new Error('Task must have a valid id');
+  }
+
+  if (!t.title || typeof t.title !== 'string') {
+    throw new Error('Task must have a valid title');
+  }
+
+  if (!t.description || typeof t.description !== 'string') {
+    throw new Error('Task must have a valid description');
+  }
+
+  if (!t.status || !['not_started', 'in_progress', 'completed'].includes(t.status)) {
+    throw new Error('Task must have a valid status');
+  }
+
+  if (!t.createdAt || !(t.createdAt instanceof Date)) {
+    throw new Error('Task must have a valid creation date');
+  }
+
+  if (t.dueDate && !(t.dueDate instanceof Date)) {
+    throw new Error('Task due date must be a valid date if provided');
+  }
+
+  if (t.difficulty && !['easy', 'normal', 'hard'].includes(t.difficulty)) {
+    throw new Error('Task difficulty must be valid if provided');
+  }
+
+  if (t.score) {
+    if (typeof t.score !== 'object' || !t.score.type || !t.score.data) {
+      throw new Error('Task score must be valid if provided');
+    }
+    if (!['musicxml', 'image', 'json'].includes(t.score.type)) {
+      throw new Error('Task score type must be valid');
+    }
+  }
+
+  if (t.answer) {
+    if (typeof t.answer !== 'object' || !t.answer.type || !t.answer.data) {
+      throw new Error('Task answer must be valid if provided');
+    }
+    if (!['musicxml', 'image', 'json'].includes(t.answer.type)) {
+      throw new Error('Task answer type must be valid');
+    }
+  }
+
+  if (t.tags && (!Array.isArray(t.tags) || !t.tags.every(tag => typeof tag === 'string'))) {
+    throw new Error('Task tags must be an array of strings if provided');
+  }
+}
